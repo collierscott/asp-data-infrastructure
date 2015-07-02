@@ -1,0 +1,8 @@
+.svn/
+.svn/**/*
+obj/**/*
+[Dd]ebug*/
+[Rr]elease*/
+_ReSharper*/
+*.bak
+*.cache

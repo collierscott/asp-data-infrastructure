@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Data", "Infrastructure.Data.csproj", "{F56E1007-4C85-40DF-9750-75567DFD8A29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{073B9919-CE5B-474F-85B8-CEFA2E324A37}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F8853ED4-F0D1-4E7A-9FE1-79C9224306B8}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".NuGetPack", ".NuGetPack", "{C90C1895-39FB-426C-9774-CAD13F8C0D3A}"
+	ProjectSection(SolutionItems) = preProject
+		.NuGetPack\NuGet.exe = .NuGetPack\NuGet.exe
+		.NuGetPack\NuGetPack.exe = .NuGetPack\NuGetPack.exe
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F56E1007-4C85-40DF-9750-75567DFD8A29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F56E1007-4C85-40DF-9750-75567DFD8A29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F56E1007-4C85-40DF-9750-75567DFD8A29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F56E1007-4C85-40DF-9750-75567DFD8A29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{073B9919-CE5B-474F-85B8-CEFA2E324A37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{073B9919-CE5B-474F-85B8-CEFA2E324A37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{073B9919-CE5B-474F-85B8-CEFA2E324A37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{073B9919-CE5B-474F-85B8-CEFA2E324A37}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

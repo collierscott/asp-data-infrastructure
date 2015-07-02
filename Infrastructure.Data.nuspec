@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Infrastructure.Data.Debug</id>
+    <version>1.0.0.0</version>
+    <authors>scollier</authors>
+    <owners>scollier</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Generic Repository and Utilities</description>
+    <releaseNotes>Debug version of Infrastructure.Data. The database connection is wrapped with MiniProfiler and gives more information about Queries.</releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags>Infrastructure.Data</tags>
+  </metadata>
+</package>
+
+<!--
+<package >
+  <metadata>
+    <id>Infrastructure.Data.Release</id>
+    <version>1.0.0.0</version>
+    <authors>scollier</authors>
+    <owners>scollier</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Generic Repository and Utilities</description>
+    <releaseNotes>Release version of Infrastructure.Data. Used for production.</releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags>Infrastructure.Data</tags>
+  </metadata>
+</package>
+-->
