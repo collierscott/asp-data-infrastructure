@@ -31,6 +31,7 @@ namespace Infrastructure.Data
 
         public Notifications Messages { get; set; }
 
+
         //TODO Look into this. Not tested. Scott Collier 10/27/2014
         public IUnitOfWork UnitOfWork
         {
@@ -87,8 +88,9 @@ namespace Infrastructure.Data
         /// <typeparam name="TEntity">Object Type</typeparam>
         /// <param name="entity">Item to insert into the database</param>
         /// <param name="query">The query used to insert item into the database</param>
+        /// <param name="timeout"></param>
         /// <returns>How many items were inserted</returns>
-        public int Insert<TEntity>(TEntity entity, SqlQuery query) where TEntity : class
+        public int Insert<TEntity>(TEntity entity, SqlQuery query, int timeout = 30) where TEntity : class
         {
 
             int result = -1;
@@ -98,7 +100,7 @@ namespace Infrastructure.Data
                 using (var cmd = _connection.CreateCommand())
                 {
 
-                    BuildCommand(query, cmd);
+                    BuildCommand(query, cmd, timeout);
                     result = cmd.ExecuteNonQuery();
 
                 }
@@ -131,8 +133,9 @@ namespace Infrastructure.Data
         /// <typeparam name="TEntity">Object Type</typeparam>
         /// <param name="entity">Item to update</param>
         /// <param name="query">The query used to update an item</param>
+        /// <param name="timeout"></param>
         /// <returns>How many items were updated</returns>
-        public int Update<TEntity>(TEntity entity, SqlQuery query) where TEntity : class
+        public int Update<TEntity>(TEntity entity, SqlQuery query, int timeout = 30) where TEntity : class
         {
             int result = -1;
 
@@ -141,7 +144,7 @@ namespace Infrastructure.Data
                 using (var cmd = _connection.CreateCommand())
                 {
 
-                    BuildCommand(query, cmd);
+                    BuildCommand(query, cmd, timeout);
                     result = cmd.ExecuteNonQuery();
 
                 }
@@ -173,8 +176,9 @@ namespace Infrastructure.Data
         /// <typeparam name="TEntity">Object Type</typeparam>
         /// <param name="id">Id of object to be deleted</param>
         /// <param name="query">The query used to delete the item</param>
+        /// <param name="timeout"></param>
         /// <returns>How many items were affected</returns>
-        public int Delete<TEntity>(string id, SqlQuery query) where TEntity : class
+        public int Delete<TEntity>(string id, SqlQuery query, int timeout = 30) where TEntity : class
         {
             int result = -1;
 
@@ -182,8 +186,8 @@ namespace Infrastructure.Data
             {
                 using (var cmd = _connection.CreateCommand())
                 {
-
-                    BuildCommand(query, cmd);
+                    
+                    BuildCommand(query, cmd, timeout);
                     result = cmd.ExecuteNonQuery();
 
                 }
@@ -214,8 +218,9 @@ namespace Infrastructure.Data
         /// </summary>
         /// <typeparam name="TEntity">Object type</typeparam>
         /// <param name="query">The query used to get the object</param>
+        /// <param name="timeout"></param>
         /// <returns>The first object returned from the query. If no results are returned, an empty entity is returned.</returns>
-        public TEntity GetOneEntity<TEntity>(SqlQuery query) where TEntity : class, new()
+        public TEntity GetOneEntity<TEntity>(SqlQuery query, int timeout = 30) where TEntity : class, new()
         {
 
             var items = new List<TEntity>();
@@ -225,7 +230,7 @@ namespace Infrastructure.Data
                 using (var cmd = _connection.CreateCommand())
                 {
 
-                    BuildCommand(query, cmd);
+                    BuildCommand(query, cmd, timeout);
 
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -263,8 +268,9 @@ namespace Infrastructure.Data
         /// </summary>
         /// <typeparam name="TEntity">Object type</typeparam>
         /// <param name="query">The query used to get the objects</param>
+        /// <param name="timeout"></param>
         /// <returns>An IEnumerable of objects of types specified</returns>
-        public IEnumerable<TEntity> GetAll<TEntity>(SqlQuery query) where TEntity : class
+        public IEnumerable<TEntity> GetAll<TEntity>(SqlQuery query, int timeout = 30) where TEntity : class
         {
 
             var items = new List<TEntity>();
@@ -274,7 +280,7 @@ namespace Infrastructure.Data
                 using (var cmd = _connection.CreateCommand())
                 {
 
-                    BuildCommand(query, cmd);
+                    BuildCommand(query, cmd, timeout);
 
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -309,8 +315,9 @@ namespace Infrastructure.Data
         /// Gets a data reader to be used by service
         /// </summary>
         /// <param name="query">The query used to create the DataReader</param>
+        /// <param name="timeout"></param>
         /// <returns>A DataReader</returns>
-        public IDataReader GetDataReader(SqlQuery query)
+        public IDataReader GetDataReader(SqlQuery query, int timeout = 30)
         {
             
             try
@@ -318,7 +325,7 @@ namespace Infrastructure.Data
 
                 using (var cmd = _connection.CreateCommand())
                 {
-                    BuildCommand(query, cmd);
+                    BuildCommand(query, cmd, timeout);
                     return cmd.ExecuteReader();
                 }
 
@@ -349,8 +356,9 @@ namespace Infrastructure.Data
         /// Gets a data reader result sets to be used by service
         /// </summary>
         /// <param name="queries">A list of queries to use to get multiple result sets</param>
+        /// <param name="timeout"></param>
         /// <returns>A DataReader</returns>
-        public IDataReader GetDataReaderResultSets(List<SqlQuery> queries)
+        public IDataReader GetDataReaderResultSets(List<SqlQuery> queries, int timeout = 30)
         {
 
             var sb = new StringBuilder();
@@ -358,7 +366,7 @@ namespace Infrastructure.Data
 
             foreach (var q in queries)
             {
-                sb.Append(q);
+                sb.Append(q.Query);
 
                 if (count < queries.Count - 1)
                 {
@@ -368,14 +376,18 @@ namespace Infrastructure.Data
                 count++;
             }
 
-            var query = sb.ToString();
+            var query = new GenericSqlQuery {
+                Id = "ResultSets", 
+                Query = sb.ToString()
+            };
 
             try
             {
 
                 using (var cmd = _connection.CreateCommand())
                 {
-                    cmd.CommandText = query;
+                    BuildCommand(query, cmd);
+                    //cmd.CommandText = query;
                     return cmd.ExecuteReader();
                 }
 
@@ -402,7 +414,13 @@ namespace Infrastructure.Data
 
         }
 
-        public IDbDataAdapter GetDataAdapter(SqlQuery query)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
+        public IDbDataAdapter GetDataAdapter(SqlQuery query, int timeout = 30)
         {
 
             try
@@ -411,7 +429,7 @@ namespace Infrastructure.Data
                 using (var cmd = _connection.CreateCommand())
                 {
 
-                    BuildCommand(query, cmd);
+                    BuildCommand(query, cmd, timeout);
                     var adapter = _context.Adapter;
                     adapter.SelectCommand = cmd;
                     return adapter;
@@ -747,7 +765,8 @@ namespace Infrastructure.Data
         /// </summary>
         /// <param name="query">A sql query</param>
         /// <param name="command">DbCommand that needs command text and parameters</param>
-        private void BuildCommand(ISqlQuery query, IDbCommand command)
+        /// <param name="timeout"></param>
+        private void BuildCommand(ISqlQuery query, IDbCommand command, int timeout = 30)
         {
             
             if (command == null) return;
@@ -760,6 +779,12 @@ namespace Infrastructure.Data
             }
 
             command.CommandText = query.Query;
+
+            //Prevent user from setting to 0 which could lead to infinite wait
+            if (timeout > 0)
+            {
+                command.CommandTimeout = timeout;
+            }
 
             if (query.Parameters == null) return;
 

@@ -64,6 +64,7 @@
     <Compile Include="DatabaseContext.cs" />
     <Compile Include="DataReaderColumn.cs" />
     <Compile Include="DataServiceResult.cs" />
+    <Compile Include="GenericSqlQuery.cs" />
     <Compile Include="GenericRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryParameter.cs" />
