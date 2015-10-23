@@ -16,6 +16,7 @@ namespace Infrastructure.Data.Abstract
         TEntity GetOneEntity<TEntity>(SqlQuery query, int timeout = 30) where TEntity : class, new();
         IEnumerable<TEntity> GetAll<TEntity>(SqlQuery query, int timeout = 30) where TEntity : class;
         IDataReader GetDataReader(SqlQuery query, int timeout = 30);
+        object ExecuteScaler(SqlQuery query);
         IDataReader GetDataReaderResultSets(List<SqlQuery> queries, int timeout = 30);
 
         string AddSingleQuotes(string value);

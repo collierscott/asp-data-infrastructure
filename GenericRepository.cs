@@ -353,6 +353,42 @@ namespace Infrastructure.Data
         }
 
         /// <summary>
+        /// Execture scaler
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public object ExecuteScaler(SqlQuery query)
+        {
+
+            try
+            {
+                using (var cmd = _connection.CreateCommand())
+                {
+                    BuildCommand(query, cmd);
+                    return cmd.ExecuteScalar();
+                }
+            }
+            catch (Exception ex)
+            {
+
+                Messages.Add(new ErrorNotification
+                {
+                    Id = "ExecuteScaler",
+                    ExceptionText = ex.ToString(),
+                    MessageException = ex,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace,
+                    Type = NotificationType.Error,
+                    UserMessage = "An error occurred while ExecuteScaler."
+                });
+                
+            }
+
+            return null;
+
+        }
+
+        /// <summary>
         /// Gets a data reader result sets to be used by service
         /// </summary>
         /// <param name="queries">A list of queries to use to get multiple result sets</param>
