@@ -19,8 +19,7 @@ namespace Infrastructure.Data
 
         public UnitOfWork(IDatabaseContext context)
         {
-            _context = context;
-            
+            _context = context;         
         }
 
         public bool IsInTransaction
@@ -74,6 +73,7 @@ namespace Infrastructure.Data
 
         public void RollBackTransaction()
         {
+
             if (_transaction == null)
             {
                 throw new ApplicationException("Cannot roll back a transaction while there is no transaction running.");
@@ -84,17 +84,19 @@ namespace Infrastructure.Data
                 _transaction.Rollback();
                 ReleaseCurrentTransaction();
             }
+
         }
 
         public void CommitTransaction()
         {
+
             if (_transaction == null)
             {
                 throw new ApplicationException("Cannot roll back a transaction while there is no transaction running.");
             }
 
             try
-            {
+            {           
                 _transaction.Commit();
                 ReleaseCurrentTransaction();
             }
@@ -103,25 +105,7 @@ namespace Infrastructure.Data
                 RollBackTransaction();
                 throw;
             }
-        }
 
-        public void SaveChanges()
-        {
-            if (IsInTransaction)
-            {
-                throw new ApplicationException("A transaction is running. Call CommitTransaction instead.");
-            }
-            //_context.BuildObjectContext().SaveChanges();
-        }
-
-        public void SaveChanges(SaveOptions saveOptions)
-        {
-            if (IsInTransaction)
-            {
-                throw new ApplicationException("A transaction is running. Call CommitTransaction instead.");
-            }
-
-            //_context.BuildObjectContext().SaveChanges(saveOptions);
         }
 
         private void ReleaseCurrentTransaction()

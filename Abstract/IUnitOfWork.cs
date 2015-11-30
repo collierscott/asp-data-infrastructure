@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Data.Objects;
 
 namespace Infrastructure.Data.Abstract
 {
@@ -13,8 +12,6 @@ namespace Infrastructure.Data.Abstract
         void Commit();
         void CommitTransaction();
         void RollBackTransaction();
-        void SaveChanges();
-        void SaveChanges(SaveOptions saveOptions);
 
     }
 
