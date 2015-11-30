@@ -627,6 +627,8 @@ namespace Infrastructure.Data
         /// <returns>A boolean</returns>
         public bool GetBoolean(string value)
         {
+            value = value.Trim();
+
             return value.Equals("Y", StringComparison.OrdinalIgnoreCase)
                 || value.Equals("1", StringComparison.OrdinalIgnoreCase)
                 || value.Equals("TRUE", StringComparison.OrdinalIgnoreCase);
