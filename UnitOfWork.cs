@@ -20,6 +20,7 @@ namespace Infrastructure.Data
         public UnitOfWork(IDatabaseContext context)
         {
             _context = context;
+            
         }
 
         public bool IsInTransaction

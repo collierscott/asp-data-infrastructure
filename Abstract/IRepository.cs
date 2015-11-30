@@ -23,6 +23,7 @@ namespace Infrastructure.Data.Abstract
         string AddSingleQuotes(List<string> list);
 
         Notifications Messages { get; set; }
+        IUnitOfWork UnitOfWork { get; }
 
         bool GetBoolean(string value);
         int GetInt(string value);

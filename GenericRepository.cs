@@ -31,7 +31,6 @@ namespace Infrastructure.Data
 
         public Notifications Messages { get; set; }
 
-
         //TODO Look into this. Not tested. Scott Collier 10/27/2014
         public IUnitOfWork UnitOfWork
         {
@@ -92,14 +91,13 @@ namespace Infrastructure.Data
         /// <returns>How many items were inserted</returns>
         public int Insert<TEntity>(TEntity entity, SqlQuery query, int timeout = 30) where TEntity : class
         {
-
+            
             int result = -1;
 
             try
             {
                 using (var cmd = _connection.CreateCommand())
                 {
-
                     BuildCommand(query, cmd, timeout);
                     result = cmd.ExecuteNonQuery();
 
@@ -118,7 +116,7 @@ namespace Infrastructure.Data
                     Source = ex.Source,
                     StackTrace = ex.StackTrace,
                     Type = NotificationType.Error,
-                    UserMessage = "An error occurred while retrieving data. " + query.Query
+                    UserMessage = "An error occurred while inserting data. " + query.Query
 
                 });
             }
@@ -162,7 +160,7 @@ namespace Infrastructure.Data
                     Source = ex.Source,
                     StackTrace = ex.StackTrace,
                     Type = NotificationType.Error,
-                    UserMessage = "An error occurred while retrieving data. " + query.Query
+                    UserMessage = "An error occurred while updating data. " + query.Query
 
                 });
             }
@@ -205,7 +203,7 @@ namespace Infrastructure.Data
                     Source = ex.Source,
                     StackTrace = ex.StackTrace,
                     Type = NotificationType.Error,
-                    UserMessage = "An error occurred while retrieving data. " + query.Query
+                    UserMessage = "An error occurred while deleting data. " + query.Query
 
                 });
             }
