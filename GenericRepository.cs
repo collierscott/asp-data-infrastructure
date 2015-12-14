@@ -27,6 +27,7 @@ namespace Infrastructure.Data
 
         // ReSharper disable once NotAccessedField.Local
         private bool _disposed;
+
         private IUnitOfWork _unitOfWork;
 
         public Notifications Messages { get; set; }
@@ -126,6 +127,48 @@ namespace Infrastructure.Data
         }
 
         /// <summary>
+        /// Insert an item into the database
+        /// </summary>
+        /// <param name="query">The query used to insert item into the database</param>
+        /// <param name="timeout"></param>
+        /// <returns>How many items were inserted</returns>
+        public int Insert(SqlQuery query, int timeout = 30)
+        {
+
+            int result = -1;
+
+            try
+            {
+                using (var cmd = _connection.CreateCommand())
+                {
+                    BuildCommand(query, cmd, timeout);
+                    result = cmd.ExecuteNonQuery();
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                _log.Error("An error occurred Insert. " + query + " " + ex);
+
+                Messages.Add(new ErrorNotification
+                {
+                    Id = "Insert",
+                    ExceptionText = ex.ToString(),
+                    MessageException = ex,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace,
+                    Type = NotificationType.Error,
+                    UserMessage = "An error occurred while inserting data. " + query.Query
+
+                });
+            }
+
+            return result;
+
+        }
+
+        /// <summary>
         /// Update an item in the database
         /// </summary>
         /// <typeparam name="TEntity">Object Type</typeparam>
@@ -150,11 +193,52 @@ namespace Infrastructure.Data
             catch (Exception ex)
             {
 
-                _log.Error("An error occurred Insert<TEntity>. " + query + " " + ex);
+                _log.Error("An error occurred Update<TEntity>. " + query + " " + ex);
 
                 Messages.Add(new ErrorNotification
                 {
                     Id = "Update<TEntity>",
+                    ExceptionText = ex.ToString(),
+                    MessageException = ex,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace,
+                    Type = NotificationType.Error,
+                    UserMessage = "An error occurred while updating data. " + query.Query
+
+                });
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Update an item in the database
+        /// </summary>
+        /// <param name="query">The query used to update an item</param>
+        /// <param name="timeout"></param>
+        /// <returns>How many items were updated</returns>
+        public int Update(SqlQuery query, int timeout = 30)
+        {
+            int result = -1;
+
+            try
+            {
+                using (var cmd = _connection.CreateCommand())
+                {
+
+                    BuildCommand(query, cmd, timeout);
+                    result = cmd.ExecuteNonQuery();
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                _log.Error("An error occurred Insert. " + query + " " + ex);
+
+                Messages.Add(new ErrorNotification
+                {
+                    Id = "Update",
                     ExceptionText = ex.ToString(),
                     MessageException = ex,
                     Source = ex.Source,
@@ -193,11 +277,53 @@ namespace Infrastructure.Data
             catch (Exception ex)
             {
 
-                _log.Error("An error occurred Insert<TEntity>. " + query + " " + ex);
+                _log.Error("An error occurred Delete<TEntity>. " + query + " " + ex);
 
                 Messages.Add(new ErrorNotification
                 {
                     Id = "Delete<TEntity>",
+                    ExceptionText = ex.ToString(),
+                    MessageException = ex,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace,
+                    Type = NotificationType.Error,
+                    UserMessage = "An error occurred while deleting data. " + query.Query
+
+                });
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Delete an item from the database
+        /// </summary>
+        /// <param name="id">Id of object to be deleted</param>
+        /// <param name="query">The query used to delete the item</param>
+        /// <param name="timeout"></param>
+        /// <returns>How many items were affected</returns>
+        public int Delete(string id, SqlQuery query, int timeout = 30)
+        {
+            int result = -1;
+
+            try
+            {
+                using (var cmd = _connection.CreateCommand())
+                {
+
+                    BuildCommand(query, cmd, timeout);
+                    result = cmd.ExecuteNonQuery();
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                _log.Error("An error occurred Delete. " + query + " " + ex);
+
+                Messages.Add(new ErrorNotification
+                {
+                    Id = "Delete",
                     ExceptionText = ex.ToString(),
                     MessageException = ex,
                     Source = ex.Source,
@@ -647,6 +773,27 @@ namespace Infrastructure.Data
             if (!isConverted)
             {
                 _log.Error("Error while trying convert " + value + " to an integer.");
+            }
+
+            return r;
+
+        }
+
+        /// <summary>
+        /// Get a long from string
+        /// </summary>
+        /// <param name="value">Value to be parsed</param>
+        /// <returns>If can parse returns value else returns 0</returns>
+        public long GetLong(string value)
+        {
+
+            long r;
+
+            bool isConverted = Int64.TryParse(value, out r);
+
+            if (!isConverted)
+            {
+                _log.Error("Error while trying convert " + value + " to a long.");
             }
 
             return r;

@@ -7,7 +7,7 @@ namespace Infrastructure.Data.Abstract
     {
         string Query { get; set; }
         IList<QueryParameter> Parameters { get; set; }
-        Dictionary<string, string> ObjectMap { get; set; }
+        ObjectMapper ObjectMap { get; set; }
         Notification Message { get; set; }
     }
 }
