@@ -5,9 +5,24 @@ using System.Text;
 namespace Infrastructure.Data.Utilities
 {
 
+#pragma warning disable 1570
     /// <summary>
-    /// Compares alphanumeric strings need to be sorted
+    /// Compares a alphanumeric string in order to sort it properly
+    /// 
+    /// Usage: Using the IEnumerable OrderBy method. OrderBy(o => o.ThingToSortBy, new AlphanumComparator())
+    /// Example:  
+    ///     var tools = (from row in data.AsEnumerable()
+    ///         where facility.Equals(row.Field<string>("FACILITY")) && mod2.Id.Equals(row.Field<string>("MODULE")) && ts1.Id.Equals(row.Field<string>("TOOLSET"))
+    ///         select new Tool
+    ///         {
+    ///             Id = row.Field<string>("TOOL"),
+    ///             Name = row.Field<string>("TOOL_DISPLAY"),
+    ///             FacilityId = row.Field<string>("FACILITY"),
+    ///             ModuleId = row.Field<string>("MODULE"),
+    ///             EquipmentFamilyId = row.Field<string>("TOOLSET")
+    ///         }).Distinct(new PropertyComparer<Tool>("Id")).OrderBy(o => o.Name, new AlphanumComparator()).ToList();
     /// </summary>
+#pragma warning restore 1570
     public class AlphaNumComparator : IComparer<string>
     {
 

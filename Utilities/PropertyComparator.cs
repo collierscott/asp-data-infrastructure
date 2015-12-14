@@ -4,10 +4,28 @@ using System.Reflection;
 
 namespace Infrastructure.Data.Utilities
 {
+#pragma warning disable 1570
     /// <summary>
-    /// Compares objects based on a specified property
+    /// Allows the comparison of objects based on a specific object's field.
+    /// 
+    /// Although can be used for other purposes, this was written to compare objects in 
+    /// an IEnumerable object to find distinct objects.
+    /// 
+    /// Usage:  Distinct(new PropertyComparer<ObjectType>("ObjectProperty"))
+    /// Example:  
+    ///     var tools = (from row in data.AsEnumerable()
+    ///         where facility.Equals(row.Field<string>("FACILITY")) && mod2.Id.Equals(row.Field<string>("MODULE")) && ts1.Id.Equals(row.Field<string>("TOOLSET"))
+    ///         select new Tool
+    ///         {
+    ///             Id = row.Field<string>("TOOL"),
+    ///             Name = row.Field<string>("TOOL_DISPLAY"),
+    ///             FacilityId = row.Field<string>("FACILITY"),
+    ///             ModuleId = row.Field<string>("MODULE"),
+    ///             EquipmentFamilyId = row.Field<string>("TOOLSET")
+    ///         }).Distinct(new PropertyComparer<Tool>("Id")).OrderBy(o => o.Name, new AlphanumComparator()).ToList();
     /// </summary>
-    /// <typeparam name="TEntity">Object type that is being compared</typeparam>
+    /// <typeparam name="TEntity"></typeparam>
+#pragma warning restore 1570
     public class PropertyComparator<TEntity> : IEqualityComparer<TEntity>
     {
 
