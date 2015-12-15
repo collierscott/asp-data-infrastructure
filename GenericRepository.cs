@@ -772,7 +772,7 @@ namespace Infrastructure.Data
 
             if (!isConverted)
             {
-                _log.Error("Error while trying convert " + value + " to an integer.");
+                _log.Debug("Error while trying convert " + value + " to an integer.");
             }
 
             return r;
@@ -793,7 +793,7 @@ namespace Infrastructure.Data
 
             if (!isConverted)
             {
-                _log.Error("Error while trying convert " + value + " to a long.");
+                _log.Debug("Error while trying convert " + value + " to a long.");
             }
 
             return r;
@@ -814,7 +814,7 @@ namespace Infrastructure.Data
 
             if (!isConverted)
             {
-                _log.Error("Error while trying convert " + value + " to a double.");
+                _log.Debug("Error while trying convert " + value + " to a double.");
             }
 
             return r;
@@ -835,7 +835,7 @@ namespace Infrastructure.Data
 
             if (!isConverted)
             {
-                _log.Error("Error while trying convert " + value + " to a DateTime.");
+                _log.Debug("Error while trying convert " + value + " to a DateTime.");
             }
 
             return d;

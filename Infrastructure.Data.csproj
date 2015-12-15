@@ -65,6 +65,7 @@
     <Compile Include="DatabaseContext.cs" />
     <Compile Include="DataReaderColumn.cs" />
     <Compile Include="DataServiceResult.cs" />
+    <Compile Include="Factories\TaskBuilderFactory.cs" />
     <Compile Include="GenericSqlQuery.cs" />
     <Compile Include="GenericRepository.cs" />
     <Compile Include="ObjectMapper.cs" />
