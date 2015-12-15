@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Infrastructure.Data.Notify;
+using log4net;
 
 namespace Infrastructure.Data.Factories
 {
 
     public static class TaskBuilderFactory
     {
+
+        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public static class Message
         {
@@ -18,6 +22,16 @@ namespace Infrastructure.Data.Factories
         }
 
         public delegate void Func();
+
+        public static void AddTasks(List<Task> tasks, List<Func> taskList)
+        {
+
+            foreach (var func in taskList)
+            {
+                NewTask(tasks, func);
+            }
+
+        }
 
         public static void NewTask(List<Task> tasks, Func f, Notifications messages, string message)
         {
