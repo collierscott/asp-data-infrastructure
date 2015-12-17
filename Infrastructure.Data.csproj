@@ -78,8 +78,10 @@
     <Compile Include="Notify\NotificationType.cs" />
     <Compile Include="UnitOfWork.cs" />
     <Compile Include="Utilities\AlphaNumComparator.cs" />
+    <Compile Include="Utilities\DataParser.cs" />
     <Compile Include="Utilities\HashSetExtension.cs" />
     <Compile Include="Utilities\PropertyComparator.cs" />
+    <Compile Include="Utilities\QueryHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

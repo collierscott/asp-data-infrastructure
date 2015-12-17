@@ -7,6 +7,7 @@ using Infrastructure.Data.Notify;
 using log4net;
 using System;
 using System.Text;
+using Infrastructure.Data.Utilities;
 
 namespace Infrastructure.Data
 {
@@ -702,18 +703,22 @@ namespace Infrastructure.Data
                             // later, add the ability to retrieve nullable types
                             var fieldType = Nullable.GetUnderlyingType(column.PropertyInfo.PropertyType) ??
                                              column.PropertyInfo.PropertyType;
-
+                            
                             if (fieldType == typeof (int))
                             {
-                                column.PropertyInfo.SetValue(item, GetInt(stringValue), null);
+                                column.PropertyInfo.SetValue(item, DataParser.GetInt(stringValue), null);
+                            }
+                            else if (fieldType == typeof (long))
+                            {
+                                column.PropertyInfo.SetValue(item, DataParser.GetLong(stringValue), null);
                             }
                             else if (fieldType == typeof (double))
                             {
-                                column.PropertyInfo.SetValue(item, GetDouble(stringValue), null);
+                                column.PropertyInfo.SetValue(item, DataParser.GetDouble(stringValue), null);
                             }
                             else if (fieldType == typeof (DateTime))
                             {
-                                column.PropertyInfo.SetValue(item, GetDateTime(stringValue), null);
+                                column.PropertyInfo.SetValue(item, DataParser.GetDateTime(stringValue), null);
                             }
                             else if (fieldType == typeof (char))
                             {
@@ -724,7 +729,7 @@ namespace Infrastructure.Data
                             }
                             else if (fieldType == typeof (bool))
                             {
-                                column.PropertyInfo.SetValue(item, GetBoolean(stringValue));
+                                column.PropertyInfo.SetValue(item, DataParser.GetBoolean(stringValue));
                             }
                             else
                             {
@@ -742,168 +747,6 @@ namespace Infrastructure.Data
             }
 
             return items;
-        }
-
-        /// <summary>
-        /// Get a booean from a string
-        /// </summary>
-        /// <param name="value">Value to evaluate</param>
-        /// <returns>A boolean</returns>
-        public bool GetBoolean(string value)
-        {
-            value = value.Trim();
-
-            return value.Equals("Y", StringComparison.OrdinalIgnoreCase)
-                || value.Equals("1", StringComparison.OrdinalIgnoreCase)
-                || value.Equals("TRUE", StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// Get an int from string
-        /// </summary>
-        /// <param name="value">Value to be parsed</param>
-        /// <returns>If can parse returns value else returns 0</returns>
-        public int GetInt(string value)
-        {
-
-            int r;
-
-            bool isConverted = Int32.TryParse(value, out r);
-
-            if (!isConverted)
-            {
-                _log.Debug("Error while trying convert " + value + " to an integer.");
-            }
-
-            return r;
-
-        }
-
-        /// <summary>
-        /// Get a long from string
-        /// </summary>
-        /// <param name="value">Value to be parsed</param>
-        /// <returns>If can parse returns value else returns 0</returns>
-        public long GetLong(string value)
-        {
-
-            long r;
-
-            bool isConverted = Int64.TryParse(value, out r);
-
-            if (!isConverted)
-            {
-                _log.Debug("Error while trying convert " + value + " to a long.");
-            }
-
-            return r;
-
-        }
-
-        /// <summary>
-        /// Get Double from a string
-        /// </summary>
-        /// <param name="value">Value to be parsed</param>
-        /// <returns>If parsed returns the value else returns 0.0</returns>
-        public double GetDouble(string value)
-        {
-
-            double r;
-
-            bool isConverted = Double.TryParse(value, out r);
-
-            if (!isConverted)
-            {
-                _log.Debug("Error while trying convert " + value + " to a double.");
-            }
-
-            return r;
-
-        }
-
-        /// <summary>
-        /// Get the DateTime from a string. Will return current DateTime if parse fails.
-        /// </summary>
-        /// <param name="value">Value to be parsed</param>
-        /// <returns>If prased returns DateTime value else returns DateTime.Now</returns>
-        public DateTime GetDateTime(string value)
-        {
-
-            DateTime d;
-
-            var isConverted = DateTime.TryParse(value, out d);
-
-            if (!isConverted)
-            {
-                _log.Debug("Error while trying convert " + value + " to a DateTime.");
-            }
-
-            return d;
-
-        }
-
-        /// <summary>
-        /// Add single quotes to elements of a comma delimited string
-        /// </summary>
-        /// <param name="value">Comma delimited string to have single quotes added to it</param>
-        /// <returns>String with single quotes added</returns>
-        public string AddSingleQuotes(string value)
-        {
-
-            if (string.IsNullOrEmpty(value)) return "";
-
-            value = value.Trim();
-
-            var sb = new StringBuilder();
-
-            string[] split = value.Split(',');
-
-            for (var i = 0; i < split.Length; i++)
-            {
-                if (split[i].Length > 0)
-                {
-                    sb.Append("'" + split[i] + "'");
-
-                    if (i < split.Length - 1)
-                    {
-                        sb.Append(",");
-                    }
-
-                }
-            }
-
-            return sb.ToString();
-
-        }
-
-        /// <summary>
-        /// Add single quotes to elements in a list
-        /// </summary>
-        /// <param name="list">A list of strings that need single quotes added</param>
-        /// <returns>A string of comma delimited values with single quotes added</returns>
-        public string AddSingleQuotes(List<string> list)
-        {
-
-            if (list == null || list.Count == 0) return "";
-
-            var sb = new StringBuilder();
-
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (list[i].Length > 0)
-                {
-                    sb.Append("'" + list[i] + "'");
-
-                    if (i < list.Count - 1)
-                    {
-                        sb.Append(",");
-                    }
-
-                }
-            }
-
-            return sb.ToString();
-
         }
 
         /// <summary>
@@ -955,7 +798,6 @@ namespace Infrastructure.Data
             if (command == null) return;
 
             //TODO probably better way to do this but works - Scott Collier 11/5/2014
-
             if (command.GetType().GetProperty("BindByName") != null)
             {
                 command.GetType().GetProperty("BindByName").SetValue(command, true, null);

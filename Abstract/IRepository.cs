@@ -25,17 +25,8 @@ namespace Infrastructure.Data.Abstract
         IDataReader GetDataReaderResultSets(List<SqlQuery> queries, int timeout = 30);
         DataTable GetDataTable(IDataReader reader);
 
-        string AddSingleQuotes(string value);
-        string AddSingleQuotes(List<string> list);
-
         Notifications Messages { get; set; }
         IUnitOfWork UnitOfWork { get; }
-
-        bool GetBoolean(string value);
-        int GetInt(string value);
-        long GetLong(string value);
-        double GetDouble(string value);    
-        DateTime GetDateTime(string value);    
 
     }
 
