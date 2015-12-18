@@ -13,24 +13,20 @@ namespace Infrastructure.Data.Abstract
         int Update<TEntity>(TEntity entity, SqlQuery query, int timeout = 30) where TEntity : class;
         int Delete<TEntity>(string id, SqlQuery query, int timeout = 30) where TEntity : class;
 
+        int Insert(SqlQuery query, int timeout = 30);
+        int Update(SqlQuery query, int timeout = 30);
+        int Delete(string id, SqlQuery query, int timeout = 30);
+
         TEntity GetOneEntity<TEntity>(SqlQuery query, int timeout = 30) where TEntity : class, new();
         IEnumerable<TEntity> GetAll<TEntity>(SqlQuery query, int timeout = 30) where TEntity : class;
+
         IDataReader GetDataReader(SqlQuery query, int timeout = 30);
         object ExecuteScaler(SqlQuery query);
         IDataReader GetDataReaderResultSets(List<SqlQuery> queries, int timeout = 30);
-
-        string AddSingleQuotes(string value);
-        string AddSingleQuotes(List<string> list);
+        DataTable GetDataTable(IDataReader reader);
 
         Notifications Messages { get; set; }
         IUnitOfWork UnitOfWork { get; }
-
-        bool GetBoolean(string value);
-        int GetInt(string value);
-        double GetDouble(string value);
-        DateTime GetDateTime(string value);
-
-        DataTable GetDataTable(IDataReader reader);
 
     }
 

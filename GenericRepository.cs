@@ -7,6 +7,7 @@ using Infrastructure.Data.Notify;
 using log4net;
 using System;
 using System.Text;
+using Infrastructure.Data.Utilities;
 
 namespace Infrastructure.Data
 {
@@ -27,6 +28,7 @@ namespace Infrastructure.Data
 
         // ReSharper disable once NotAccessedField.Local
         private bool _disposed;
+
         private IUnitOfWork _unitOfWork;
 
         public Notifications Messages { get; set; }
@@ -126,6 +128,48 @@ namespace Infrastructure.Data
         }
 
         /// <summary>
+        /// Insert an item into the database
+        /// </summary>
+        /// <param name="query">The query used to insert item into the database</param>
+        /// <param name="timeout"></param>
+        /// <returns>How many items were inserted</returns>
+        public int Insert(SqlQuery query, int timeout = 30)
+        {
+
+            int result = -1;
+
+            try
+            {
+                using (var cmd = _connection.CreateCommand())
+                {
+                    BuildCommand(query, cmd, timeout);
+                    result = cmd.ExecuteNonQuery();
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                _log.Error("An error occurred Insert. " + query + " " + ex);
+
+                Messages.Add(new ErrorNotification
+                {
+                    Id = "Insert",
+                    ExceptionText = ex.ToString(),
+                    MessageException = ex,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace,
+                    Type = NotificationType.Error,
+                    UserMessage = "An error occurred while inserting data. " + query.Query
+
+                });
+            }
+
+            return result;
+
+        }
+
+        /// <summary>
         /// Update an item in the database
         /// </summary>
         /// <typeparam name="TEntity">Object Type</typeparam>
@@ -150,11 +194,52 @@ namespace Infrastructure.Data
             catch (Exception ex)
             {
 
-                _log.Error("An error occurred Insert<TEntity>. " + query + " " + ex);
+                _log.Error("An error occurred Update<TEntity>. " + query + " " + ex);
 
                 Messages.Add(new ErrorNotification
                 {
                     Id = "Update<TEntity>",
+                    ExceptionText = ex.ToString(),
+                    MessageException = ex,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace,
+                    Type = NotificationType.Error,
+                    UserMessage = "An error occurred while updating data. " + query.Query
+
+                });
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Update an item in the database
+        /// </summary>
+        /// <param name="query">The query used to update an item</param>
+        /// <param name="timeout"></param>
+        /// <returns>How many items were updated</returns>
+        public int Update(SqlQuery query, int timeout = 30)
+        {
+            int result = -1;
+
+            try
+            {
+                using (var cmd = _connection.CreateCommand())
+                {
+
+                    BuildCommand(query, cmd, timeout);
+                    result = cmd.ExecuteNonQuery();
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                _log.Error("An error occurred Insert. " + query + " " + ex);
+
+                Messages.Add(new ErrorNotification
+                {
+                    Id = "Update",
                     ExceptionText = ex.ToString(),
                     MessageException = ex,
                     Source = ex.Source,
@@ -193,11 +278,53 @@ namespace Infrastructure.Data
             catch (Exception ex)
             {
 
-                _log.Error("An error occurred Insert<TEntity>. " + query + " " + ex);
+                _log.Error("An error occurred Delete<TEntity>. " + query + " " + ex);
 
                 Messages.Add(new ErrorNotification
                 {
                     Id = "Delete<TEntity>",
+                    ExceptionText = ex.ToString(),
+                    MessageException = ex,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace,
+                    Type = NotificationType.Error,
+                    UserMessage = "An error occurred while deleting data. " + query.Query
+
+                });
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Delete an item from the database
+        /// </summary>
+        /// <param name="id">Id of object to be deleted</param>
+        /// <param name="query">The query used to delete the item</param>
+        /// <param name="timeout"></param>
+        /// <returns>How many items were affected</returns>
+        public int Delete(string id, SqlQuery query, int timeout = 30)
+        {
+            int result = -1;
+
+            try
+            {
+                using (var cmd = _connection.CreateCommand())
+                {
+
+                    BuildCommand(query, cmd, timeout);
+                    result = cmd.ExecuteNonQuery();
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                _log.Error("An error occurred Delete. " + query + " " + ex);
+
+                Messages.Add(new ErrorNotification
+                {
+                    Id = "Delete",
                     ExceptionText = ex.ToString(),
                     MessageException = ex,
                     Source = ex.Source,
@@ -576,18 +703,22 @@ namespace Infrastructure.Data
                             // later, add the ability to retrieve nullable types
                             var fieldType = Nullable.GetUnderlyingType(column.PropertyInfo.PropertyType) ??
                                              column.PropertyInfo.PropertyType;
-
+                            
                             if (fieldType == typeof (int))
                             {
-                                column.PropertyInfo.SetValue(item, GetInt(stringValue), null);
+                                column.PropertyInfo.SetValue(item, DataParser.GetInt(stringValue), null);
+                            }
+                            else if (fieldType == typeof (long))
+                            {
+                                column.PropertyInfo.SetValue(item, DataParser.GetLong(stringValue), null);
                             }
                             else if (fieldType == typeof (double))
                             {
-                                column.PropertyInfo.SetValue(item, GetDouble(stringValue), null);
+                                column.PropertyInfo.SetValue(item, DataParser.GetDouble(stringValue), null);
                             }
                             else if (fieldType == typeof (DateTime))
                             {
-                                column.PropertyInfo.SetValue(item, GetDateTime(stringValue), null);
+                                column.PropertyInfo.SetValue(item, DataParser.GetDateTime(stringValue), null);
                             }
                             else if (fieldType == typeof (char))
                             {
@@ -598,7 +729,7 @@ namespace Infrastructure.Data
                             }
                             else if (fieldType == typeof (bool))
                             {
-                                column.PropertyInfo.SetValue(item, GetBoolean(stringValue));
+                                column.PropertyInfo.SetValue(item, DataParser.GetBoolean(stringValue));
                             }
                             else
                             {
@@ -616,147 +747,6 @@ namespace Infrastructure.Data
             }
 
             return items;
-        }
-
-        /// <summary>
-        /// Get a booean from a string
-        /// </summary>
-        /// <param name="value">Value to evaluate</param>
-        /// <returns>A boolean</returns>
-        public bool GetBoolean(string value)
-        {
-            value = value.Trim();
-
-            return value.Equals("Y", StringComparison.OrdinalIgnoreCase)
-                || value.Equals("1", StringComparison.OrdinalIgnoreCase)
-                || value.Equals("TRUE", StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// Get an int from string
-        /// </summary>
-        /// <param name="value">Value to be parsed</param>
-        /// <returns>If can parse returns value else returns 0</returns>
-        public int GetInt(string value)
-        {
-
-            int r;
-
-            bool isConverted = Int32.TryParse(value, out r);
-
-            if (!isConverted)
-            {
-                _log.Error("Error while trying convert " + value + " to an integer.");
-            }
-
-            return r;
-
-        }
-
-        /// <summary>
-        /// Get Double from a string
-        /// </summary>
-        /// <param name="value">Value to be parsed</param>
-        /// <returns>If parsed returns the value else returns 0.0</returns>
-        public double GetDouble(string value)
-        {
-
-            double r;
-
-            bool isConverted = Double.TryParse(value, out r);
-
-            if (!isConverted)
-            {
-                _log.Error("Error while trying convert " + value + " to a double.");
-            }
-
-            return r;
-
-        }
-
-        /// <summary>
-        /// Get the DateTime from a string. Will return current DateTime if parse fails.
-        /// </summary>
-        /// <param name="value">Value to be parsed</param>
-        /// <returns>If prased returns DateTime value else returns DateTime.Now</returns>
-        public DateTime GetDateTime(string value)
-        {
-
-            DateTime d;
-
-            var isConverted = DateTime.TryParse(value, out d);
-
-            if (!isConverted)
-            {
-                _log.Error("Error while trying convert " + value + " to a DateTime.");
-            }
-
-            return d;
-
-        }
-
-        /// <summary>
-        /// Add single quotes to elements of a comma delimited string
-        /// </summary>
-        /// <param name="value">Comma delimited string to have single quotes added to it</param>
-        /// <returns>String with single quotes added</returns>
-        public string AddSingleQuotes(string value)
-        {
-
-            if (string.IsNullOrEmpty(value)) return "";
-
-            value = value.Trim();
-
-            var sb = new StringBuilder();
-
-            string[] split = value.Split(',');
-
-            for (var i = 0; i < split.Length; i++)
-            {
-                if (split[i].Length > 0)
-                {
-                    sb.Append("'" + split[i] + "'");
-
-                    if (i < split.Length - 1)
-                    {
-                        sb.Append(",");
-                    }
-
-                }
-            }
-
-            return sb.ToString();
-
-        }
-
-        /// <summary>
-        /// Add single quotes to elements in a list
-        /// </summary>
-        /// <param name="list">A list of strings that need single quotes added</param>
-        /// <returns>A string of comma delimited values with single quotes added</returns>
-        public string AddSingleQuotes(List<string> list)
-        {
-
-            if (list == null || list.Count == 0) return "";
-
-            var sb = new StringBuilder();
-
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (list[i].Length > 0)
-                {
-                    sb.Append("'" + list[i] + "'");
-
-                    if (i < list.Count - 1)
-                    {
-                        sb.Append(",");
-                    }
-
-                }
-            }
-
-            return sb.ToString();
-
         }
 
         /// <summary>
@@ -808,7 +798,6 @@ namespace Infrastructure.Data
             if (command == null) return;
 
             //TODO probably better way to do this but works - Scott Collier 11/5/2014
-
             if (command.GetType().GetProperty("BindByName") != null)
             {
                 command.GetType().GetProperty("BindByName").SetValue(command, true, null);

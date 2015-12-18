@@ -18,7 +18,7 @@ namespace Infrastructure.Data
         public string Id { get; set; }
         public string Query { get; set; }
         public IList<QueryParameter> Parameters { get; set; }
-        public Dictionary<string, string> ObjectMap { get; set; }
+        public ObjectMapper ObjectMap { get; set; }
 
         /// <summary>
         /// Used to return a user readable sql string
@@ -44,7 +44,7 @@ namespace Infrastructure.Data
         {
 
             Parameters = new List<QueryParameter>();
-            ObjectMap = new Dictionary<string, string>();
+            ObjectMap = new ObjectMapper();
             _message = new Notification
             {
                 Id = Id,
