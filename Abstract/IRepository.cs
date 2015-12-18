@@ -22,6 +22,7 @@ namespace Infrastructure.Data.Abstract
 
         IDataReader GetDataReader(SqlQuery query, int timeout = 30);
         object ExecuteScaler(SqlQuery query);
+        int ExecuteStoredProcedure(SqlQuery query, int timeout = 60);
         IDataReader GetDataReaderResultSets(List<SqlQuery> queries, int timeout = 30);
         DataTable GetDataTable(IDataReader reader);
 

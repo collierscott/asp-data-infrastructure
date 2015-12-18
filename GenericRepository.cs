@@ -513,6 +513,44 @@ namespace Infrastructure.Data
 
         }
 
+        public int ExecuteStoredProcedure(SqlQuery query, int timeout = 60)
+        {
+
+            int result = -1;
+
+            try
+            {
+                using (var cmd = _connection.CreateCommand())
+                {
+
+                    BuildCommand(query, cmd, timeout);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    result = cmd.ExecuteNonQuery();
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                _log.Error("An error occurred running the stored procedure. " + query + " " + ex);
+
+                Messages.Add(new ErrorNotification
+                {
+                    Id = "ExecuteStoredProcedure",
+                    ExceptionText = ex.ToString(),
+                    MessageException = ex,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace,
+                    Type = NotificationType.Error,
+                    UserMessage = "An error occurred running the stored procedure. " + query.Query
+
+                });
+            }
+
+            return result;
+
+        }
+
         /// <summary>
         /// Gets a data reader result sets to be used by service
         /// </summary>
