@@ -513,6 +513,76 @@ namespace Infrastructure.Data
 
         }
 
+        public int ExecuteStoredProcedure(string name, SqlQuery query)
+        {
+
+            var result = -1;
+
+            try
+            {
+
+                using (var cmd = _connection.CreateCommand())
+                {
+
+                    BuildCommand(query, cmd);
+                    
+
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = name;
+
+                    result = cmd.ExecuteNonQuery();
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                //Used to find text that can be displayed to user. Must be formatted in data base (raise_application_error)
+                var index = ex.Message.IndexOf("</ERROR>", StringComparison.OrdinalIgnoreCase);
+
+                var error = "";
+
+                if (index > 0)
+                {
+                    error = ex.Message.Substring(0, index);
+
+                    var index2 = error.IndexOf("<ERROR>", StringComparison.OrdinalIgnoreCase);
+
+                    error = error.Remove(index2, 7);
+                }
+
+                if (string.IsNullOrEmpty(error))
+                {
+                    error = ex.Message;
+                }
+
+                Messages.Add(
+
+                    new ErrorNotification
+                    {
+
+                        Id = "ExecuteStoredProcedure",
+                        Type = NotificationType.Error,
+                        UserMessage = error,
+                        ExceptionText = ex.Message + " " + name,
+                        MessageException = ex,
+                        Source = GetType().Name,
+                        StackTrace = ex.StackTrace
+
+                    }
+
+                );
+
+                _log.Error(ex.Message + " " + name);
+
+                
+            }
+
+            return result;
+
+        }
+
         /// <summary>
         /// Gets a data reader result sets to be used by service
         /// </summary>

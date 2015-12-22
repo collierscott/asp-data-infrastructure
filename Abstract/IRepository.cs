@@ -27,6 +27,7 @@ namespace Infrastructure.Data.Abstract
 
         Notifications Messages { get; set; }
         IUnitOfWork UnitOfWork { get; }
+        int ExecuteStoredProcedure(string name, SqlQuery query);
 
     }
 
