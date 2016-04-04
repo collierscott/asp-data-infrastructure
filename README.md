@@ -1,29 +1,11 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+This is a data infrastructure for ASP.NET MVC project that doesn't use Entity Framework and has it's own simple ORM. This is written to be used with Oracle because that is what I am using but should be easily converted for other databases.
 
-### What is this repository for? ###
+### Why? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+Besides being too slow, using Entity Framework was difficult to work with data that I use at my current position.
 
-### How do I get set up? ###
+The data is not normalized but has been processed for reporting. I also use a lot of written queries to retrieve data in order to create charts, graphs, and other reports. A lot of custom object building and businees logic is needed that was too time consuming to due using entity framework.
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+This was written on my own time.
