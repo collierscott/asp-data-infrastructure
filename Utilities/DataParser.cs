@@ -87,26 +87,28 @@ namespace Infrastructure.Data.Utilities
         }
 
         /// <summary>
-        /// Get the DateTime from a string. Will return current DateTime if parse fails.
+        /// Get the DateTime from a string. Will return current DateTime or NULL if parse fails.
         /// </summary>
         /// <param name="value">Value to be parsed</param>
-        /// <returns>If prased returns DateTime value else returns DateTime.Now</returns>
-        public static DateTime GetDateTime(string value)
+        /// <param name="useNow">If true, return current date time</param>
+        /// <returns>If parsed returns DateTime value else returns DateTime.Now or NULL</returns>
+        public static DateTime? GetDateTime(string value, bool useNow = false)
         {
-
             DateTime d;
-
             var isConverted = DateTime.TryParse(value, out d);
 
             if (!isConverted)
             {
                 _log.Debug("Error while trying convert " + value + " to a DateTime.");
+                if (useNow)
+                {
+                    return DateTime.Now;
+                }
+
+                return null;
             }
 
             return d;
-
-        }
-         
+        }      
     }
-
 }
